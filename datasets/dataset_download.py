@@ -1,5 +1,4 @@
 import os
-import requests
 import urllib.request
 from utils.util_log import log
 from common.common_func import check_file_exist, create_folder
@@ -22,7 +21,7 @@ class DatasetDownload:
         return self.config.path
 
     def check_file_length(self):
-        true_length = int(requests.head(self.config.link).headers.get("Content-Length", -1))
+        true_length = int(urllib.request.urlopen(self.config.link).headers.get("Content-Length", -1))
         real_length = os.stat(self.config.path).st_size
 
         if real_length == true_length:

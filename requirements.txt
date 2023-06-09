@@ -6,7 +6,7 @@ stopit
 typer
 sklearn
 scikit-learn
-requests
+#requests
 
 pymilvus
 elasticsearch
