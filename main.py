@@ -1,14 +1,15 @@
 import typer
 from configurations import get_files, get_custom_files
 from client import ClientEntry
-from common.common_func import read_file
+from common.common_func import read_file, force_cleanup_subprocesses
 from utils.util_log import log
 
 app = typer.Typer()
 
 
 @app.command()
-def concurrency(host: str = "localhost", engine: str = typer.Option("milvus"), config_name: str = typer.Option("")):
+def concurrency(host: str = "localhost", engine: str = typer.Option("milvus"), config_name: str = typer.Option(""),
+                force_cleanup: bool = typer.Option(False)):
     """
     :param host: server host
 
@@ -17,6 +18,8 @@ def concurrency(host: str = "localhost", engine: str = typer.Option("milvus"), c
     :param config_name:
         specify the name of the configuration file in the configurations directory by prefix matching;
         if not specified, all <engine>_concurrency*.yaml in the configuration directory will be used.
+
+    :param force_cleanup: bool, force clean up subprocesses after multiprocessing.Pool, avoid lingering zombie processes
     """
     configs = get_custom_files(config_name) if config_name != "" else get_files(f"{engine}_concurrency")
     log.clear_log_file()
@@ -26,6 +29,7 @@ def concurrency(host: str = "localhost", engine: str = typer.Option("milvus"), c
         c.start_concurrency()
         log.restore_debug_log_file()
     log.info(" Concurrency task finished! ".center(120, "-"))
+    force_cleanup_subprocesses(force_cleanup)
 
 
 @app.command()

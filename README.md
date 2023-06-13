@@ -82,12 +82,19 @@ Usage: main.py concurrency [OPTIONS]
   configurations directory by prefix matching;     if not specified, all
   <engine>_concurrency*.yaml in the configuration directory will be used.
 
+  :param force_cleanup: bool, force clean up subprocesses after
+  multiprocessing.Pool, avoid lingering zombie processes
+
 Options:
-  --host TEXT         [default: localhost]
-  --engine TEXT       [default: milvus]
+  --host TEXT                     [default: localhost]
+  --engine TEXT                   [default: milvus]
   --config-name TEXT
-  --help              Show this message and exit.
+  --force-cleanup / --no-force-cleanup
+                                  [default: no-force-cleanup]
+  --help                          Show this message and exit.
 ```
+*If you run this code under a special subprocess, resources may not be successfully recovered after the program exits,
+which resulting in zombie processes; you can use the `--force-cleanup` to force clean up all fork child processes before exiting.*
 
 example: `python3 main.py concurrency --host localhost --engine milvus`
 

@@ -1,4 +1,5 @@
 import os
+import psutil
 import h5py
 from yaml import full_load
 import json
@@ -171,3 +172,21 @@ def create_folder(file_path):
     folder_path, file_name = os.path.split(file_path)
     if not os.path.isdir(folder_path):
         os.makedirs(folder_path)
+
+
+def force_cleanup_subprocesses(flag: bool):
+    if flag:
+        p = psutil.Process(os.getpid())
+        p_dict = {}
+        for _p in p.children():
+            p_dict[str(_p.pid)] = _p
+
+        try:
+            for o in list(sorted([i.pid for i in p.children()], reverse=True)):
+                sub_process = p_dict[str(o)]
+                log.warning("[force_cleanup_subprocesses] stop pid: %s " % sub_process.pid)
+
+                sub_process.send_signal(9)
+                sub_process.wait(60)
+        except Exception as e:
+            log.error(f"[force_cleanup_subprocesses] Error catch: {e}")
